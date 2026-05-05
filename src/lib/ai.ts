@@ -40,3 +40,64 @@ export async function generateAutoResponse(leadData: {
 
   return text;
 }
+
+export async function generateContentCalendar(context: {
+  trendingStyles: string[];
+  trendingHashtags: string[];
+  shopName: string;
+  adjustmentNote?: string;
+}) {
+  const { object } = await generateObject({
+    model: openai('gpt-4o-mini'),
+    schema: z.object({
+      posts: z.array(z.object({
+        platform: z.enum(['instagram', 'tiktok', 'facebook']),
+        contentType: z.enum(['flash_sale', 'artist_spotlight', 'reveal', 'tips', 'testimonial']),
+        title: z.string(),
+        description: z.string(),
+        suggestedHashtags: z.array(z.string()),
+      })),
+    }),
+    prompt: `Create a weekly content calendar for a tattoo shop named ${context.shopName}.
+    Trends: ${context.trendingStyles.join(', ')}
+    Hashtags: ${context.trendingHashtags.join(', ')}
+    ${context.adjustmentNote ? `Note: ${context.adjustmentNote}` : ''}
+    
+    Generate 5 engaging post ideas spread across Instagram, TikTok, and Facebook.
+    Include a mix of flash sales, artist spotlights, before/after reveals, tattoo care tips, and client testimonials.`,
+  });
+
+  return object.posts;
+}
+
+export async function generatePostCaption(post: {
+  platform: string;
+  contentType: string;
+  title: string;
+  description: string;
+}) {
+  const { text } = await generateText({
+    model: openai('gpt-4o-mini'),
+    prompt: `Write a social media caption for a ${post.platform} post.
+    Type: ${post.contentType}
+    Title: ${post.title}
+    Description: ${post.description}
+    
+    The tone should be friendly, casual, and match a tattoo shop vibe. Use emojis where appropriate. Keep it concise for Instagram/TikTok.`,
+  });
+
+  return text;
+}
+
+export async function getTrendingTattooData() {
+  const { object } = await generateObject({
+    model: openai('gpt-4o-mini'),
+    schema: z.object({
+      trendingStyles: z.array(z.string()),
+      trendingHashtags: z.array(z.string()),
+    }),
+    prompt: `Provide a list of 5 currently trending tattoo styles and 10 popular tattoo-related hashtags for social media engagement.`,
+  });
+
+  return object;
+}
