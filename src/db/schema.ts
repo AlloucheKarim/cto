@@ -42,6 +42,9 @@ export const appointments = pgTable('appointments', {
   depositAmount: integer('deposit_amount'), // in cents
   depositStatus: text('deposit_status', { enum: ['unpaid', 'paid', 'refunded'] }).default('unpaid'),
   stripePaymentId: text('stripe_payment_id'),
+  reminder48hSent: boolean('reminder_48h_sent').default(false),
+  reminder2hSent: boolean('reminder_2h_sent').default(false),
+  aftercareSent: boolean('aftercare_sent').default(false),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
