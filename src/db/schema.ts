@@ -42,6 +42,7 @@ export const appointments = pgTable('appointments', {
   depositAmount: integer('deposit_amount'), // in cents
   depositStatus: text('deposit_status', { enum: ['unpaid', 'paid', 'refunded'] }).default('unpaid'),
   stripePaymentId: text('stripe_payment_id'),
+  reviewRequestSent: boolean('review_request_sent').default(false),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
