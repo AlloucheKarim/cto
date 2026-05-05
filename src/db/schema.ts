@@ -57,6 +57,8 @@ export const leads = pgTable('leads', {
   status: text('status', { enum: ['new', 'contacted', 'booked', 'lost'] }).default('new'),
   score: text('score', { enum: ['hot', 'warm', 'cold'] }),
   lastEngagement: timestamp('last_engagement'),
+  followUpStep: integer('follow_up_step').default(0),
+  lastFollowUpAt: timestamp('last_follow_up_at'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
