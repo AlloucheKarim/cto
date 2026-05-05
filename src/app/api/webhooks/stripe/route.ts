@@ -2,8 +2,9 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { db } from '@/db';
-import { appointments } from '@/db/schema';
+import { appointments, clients, artists } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { sendSMS } from '@/lib/twilio';
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -30,14 +31,31 @@ export async function POST(req: Request) {
       return new NextResponse('No appointment ID found in metadata', { status: 400 });
     }
 
-    await db.update(appointments)
-      .set({ 
-        depositStatus: 'paid',
-        status: 'confirmed'
-      })
-      .where(eq(appointments.id, appointmentId));
+    const appointment = await db.query.appointments.findFirst({
+      where: eq(appointments.id, appointmentId),
+      with: {
+        client: true,
+        artist: true,
+      },
+    });
+
+    if (appointment) {
+      await db.update(appointments)
+        .set({ 
+          depositStatus: 'paid',
+          status: 'confirmed'
+        })
+        .where(eq(appointments.id, appointmentId));
+        
+      // Send SMS confirmation
+      const dateStr = appointment.dateTime.toLocaleDateString();
+      const timeStr = appointment.dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       
-    // TODO: Send SMS confirmation via Twilio (Module 3)
+      await sendSMS(
+        appointment.client.phone,
+        `Hi ${appointment.client.name}! Your tattoo appointment with ${appointment.artist.name} is confirmed for ${dateStr} at ${timeStr}. We're excited to see you!`
+      );
+    }
   }
 
   return new NextResponse(null, { status: 200 });
