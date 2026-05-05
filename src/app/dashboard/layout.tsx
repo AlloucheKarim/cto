@@ -9,7 +9,8 @@ import {
   TrendingUp, 
   Settings,
   LogOut,
-  Sparkles
+  Sparkles,
+  Star
 } from 'lucide-react';
 
 export default function DashboardLayout({
@@ -22,6 +23,7 @@ export default function DashboardLayout({
     { icon: Calendar, label: 'Bookings', href: '/dashboard/bookings' },
     { icon: Phone, label: 'Missed Calls', href: '/dashboard/missed-calls' },
     { icon: Sparkles, label: 'Content Ideas', href: '/dashboard/content' },
+    { icon: Star, label: 'Reviews', href: '/dashboard/reviews' },
     { icon: MessageSquare, label: 'Communications', href: '/dashboard/communications' },
     { icon: Users, label: 'Clients', href: '/dashboard/clients' },
     { icon: TrendingUp, label: 'Analytics', href: '/dashboard/analytics' },

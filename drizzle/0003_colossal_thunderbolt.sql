@@ -1,0 +1,1 @@
+ALTER TABLE "appointments" ADD COLUMN "review_request_sent" boolean DEFAULT false;
