@@ -24,6 +24,8 @@ export const clients = pgTable('clients', {
   notes: text('notes'),
   spendLevel: text('spend_level', { enum: ['low', 'medium', 'high'] }).default('low'),
   referralSource: text('referral_source'),
+  stylePreference: text('style_preference').array(),
+  birthdaySentYear: integer('birthday_sent_year'), // To avoid sending multiple times a year
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -112,9 +114,17 @@ export const artistsRelations = relations(artists, ({ many }) => ({
 
 export const clientsRelations = relations(clients, ({ many }) => ({
   appointments: many(appointments),
+  communications: many(communications),
 }));
 
-export const appointmentsRelations = relations(appointments, ({ one }) => ({
+export const communicationsRelations = relations(communications, ({ one }) => ({
+  client: one(clients, {
+    fields: [communications.contactId],
+    references: [clients.id],
+  }),
+}));
+
+export const appointmentsRelations = relations(appointments, ({ one, many }) => ({
   artist: one(artists, {
     fields: [appointments.artistId],
     references: [artists.id],
@@ -123,4 +133,5 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
     fields: [appointments.clientId],
     references: [clients.id],
   }),
+  reviews: many(reviews),
 }));

@@ -4,6 +4,8 @@ import { missedCalls } from '@/db/schema';
 import { desc } from 'drizzle-orm';
 import { Phone, Clock, MessageSquare, UserCheck } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function MissedCallsPage() {
   const calls = await db.query.missedCalls.findMany({
     orderBy: [desc(missedCalls.timestamp)],

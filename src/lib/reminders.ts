@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { appointments, clients, artists, communications } from '@/db/schema';
-import { eq, and, lte, gte, isNull } from 'drizzle-orm';
+import { eq, and, lte, gte, isNull, sql } from 'drizzle-orm';
 import { sendSMS } from './twilio';
 import { addHours, addDays, isBefore, isAfter } from 'date-fns';
 
@@ -109,6 +109,40 @@ export async function processReminders() {
       type: 'sms',
       direction: 'outbound',
       contactId: appt.clientId,
+      content: message,
+    });
+  }
+
+  // 4. Birthday SMS
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const day = today.getDate();
+  const year = today.getFullYear();
+
+  // Drizzle doesn't have a direct date part extractor for all DBs, 
+  // so we'll use a raw SQL for PostgreSQL to find birthdays today
+  // where birthday_sent_year != current year
+  const clientsWithBirthday = await db.query.clients.findMany({
+    where: and(
+      sql`EXTRACT(MONTH FROM ${clients.birthday}) = ${month}`,
+      sql`EXTRACT(DAY FROM ${clients.birthday}) = ${day}`,
+      sql`(${clients.birthdaySentYear} IS NULL OR ${clients.birthdaySentYear} < ${year})`
+    ),
+  });
+
+  for (const client of clientsWithBirthday) {
+    const message = `Happy Birthday, ${client.name}! 🎂 To celebrate, we're offering you 15% off your next tattoo. Use code BDAY15 when booking or reply to this message!`;
+    
+    await sendSMS(client.phone, message);
+    
+    await db.update(clients)
+      .set({ birthdaySentYear: year })
+      .where(eq(clients.id, client.id));
+
+    await db.insert(communications).values({
+      type: 'sms',
+      direction: 'outbound',
+      contactId: client.id,
       content: message,
     });
   }
