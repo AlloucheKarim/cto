@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { appointments, clients, communications } from '@/db/schema';
 import { eq, and, desc, gte } from 'drizzle-orm';
 import { sendSMS } from '@/lib/twilio';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const from = formData.get('From') as string;
   const body = formData.get('Body') as string;
