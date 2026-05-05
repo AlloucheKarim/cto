@@ -1,9 +1,14 @@
 import React from 'react';
 import { createClient } from '@/lib/supabase/server';
+import { db } from '@/db';
+import { missedCalls } from '@/db/schema';
 
 export default async function DashboardPage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
+  const missedCallsCount = await db.select().from(missedCalls);
+  const totalMissed = missedCallsCount.length;
 
   // Basic role check logic (staff vs owner)
   // In a real app, we'd fetch the user's role from a profiles table
@@ -25,7 +30,7 @@ export default async function DashboardPage() {
         {[
           { label: 'Total Bookings', value: '0' },
           { label: 'New Leads', value: '0' },
-          { label: 'Missed Calls', value: '0' },
+          { label: 'Missed Calls', value: totalMissed.toString() },
           { label: 'Today\'s Revenue', value: '$0' },
         ].map((stat) => (
           <div key={stat.label} className="rounded-xl border bg-white p-6 shadow-sm">

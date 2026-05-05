@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { 
   LayoutDashboard, 
   Calendar, 
+  Phone,
   Users, 
   MessageSquare, 
   TrendingUp, 
@@ -18,6 +19,7 @@ export default function DashboardLayout({
   const menuItems = [
     { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
     { icon: Calendar, label: 'Bookings', href: '/dashboard/bookings' },
+    { icon: Phone, label: 'Missed Calls', href: '/dashboard/missed-calls' },
     { icon: MessageSquare, label: 'Communications', href: '/dashboard/communications' },
     { icon: Users, label: 'Clients', href: '/dashboard/clients' },
     { icon: TrendingUp, label: 'Analytics', href: '/dashboard/analytics' },
