@@ -8,10 +8,10 @@ import {
   MessageSquare, 
   TrendingUp, 
   Settings,
-  LogOut,
   Sparkles,
   Star
 } from 'lucide-react';
+import LogoutButton from './LogoutButton';
 
 export default function DashboardLayout({
   children,
@@ -50,10 +50,7 @@ export default function DashboardLayout({
           ))}
         </nav>
         <div className="p-4 border-t">
-          <button className="flex items-center space-x-3 p-3 w-full text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors">
-            <LogOut className="w-5 h-5" />
-            <span>Logout</span>
-          </button>
+          <LogoutButton />
         </div>
       </aside>
 
