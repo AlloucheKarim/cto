@@ -101,6 +101,8 @@ export const contentPosts = pgTable('content_posts', {
   hashtags: text('hashtags').array(),
   status: text('status', { enum: ['draft', 'scheduled', 'posted'] }).default('draft'),
   aiGenerated: boolean('ai_generated').default(true),
+  engagementLikes: integer('engagement_likes').default(0),
+  engagementComments: integer('engagement_comments').default(0),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
